@@ -1,7 +1,7 @@
-package com.example.lenny.security;
+package com.example.ressy.security;
 
-import com.example.lenny.entity.User;
-import com.example.lenny.repository.UserRepository;
+import com.example.ressy.repository.UserRepository;
+import com.example.ressy.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 @Component
 public class CustomUserDetailsService implements UserDetailsService {

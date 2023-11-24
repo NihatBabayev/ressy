@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class RessyApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(RessyApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(RessyApplication.class, args);
+    }
 }

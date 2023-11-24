@@ -1,4 +1,4 @@
-package com.example.lenny.security;
+package com.example.ressy.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             username = jwtService.extractUsername(token);
         }
-        if (token == null && (request.getServletPath().startsWith("/auth/login") || request.getServletPath().startsWith("/auth/signup") )) {
+        if (token == null && (request.getServletPath().startsWith("/auth/login") || request.getServletPath().startsWith("/auth/signup") || request.getServletPath().startsWith("/auth/forgot") || request.getServletPath().startsWith("/auth/forgot/web") )) {
             filterChain.doFilter(request, response);
             return;
         }

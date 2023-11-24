@@ -1,6 +1,6 @@
-package com.example.lenny.security;
+package com.example.ressy.security;
 
-import com.example.lenny.repository.UserRepository;
+import com.example.ressy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,7 +67,8 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/author/**").hasRole("AUTHOR")
                                 .requestMatchers("/student/**").hasRole("STUDENT")
-                ).httpBasic(withDefaults())
+                ).cors(cors -> cors.disable())
+                .httpBasic(withDefaults())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );

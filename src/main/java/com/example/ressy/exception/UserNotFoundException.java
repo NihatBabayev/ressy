@@ -1,4 +1,4 @@
-package com.example.lenny.exception;
+package com.example.ressy.exception;
 
 public class UserNotFoundException extends RuntimeException{
     private static final String DEFAULT_MESSAGE = "User not found";

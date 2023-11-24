@@ -1,4 +1,4 @@
-package com.example.lenny.dto;
+package com.example.ressy.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

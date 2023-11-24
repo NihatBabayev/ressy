@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "services", schema = "ressy")
+@Table(name = "professionals", schema = "ressy")
 @Data
 public class Professional {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(name = "service_name")
-    private String serviceName;
+    @Column(name = "profession_name")
+    private String professionName;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

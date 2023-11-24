@@ -1,4 +1,4 @@
-package com.example.lenny.security;
+package com.example.ressy.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Component
 public class JwtService {
     @Value("${token.signing.key}")
-    private static String SECRET;
+    private String SECRET;
 
 
     public String extractUsername(String token) {
