@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -82,12 +84,14 @@ public class AuthController {
     }
 
     @PostMapping("/forgot")
-    public ResponseEntity<ResponseModel<String>> forgotPassword(@RequestParam(value = "email") String email) {
+    public ResponseEntity<ResponseModel<String>> forgotPassword(@RequestParam(value = "email") String email) throws UnsupportedEncodingException {
         if (!userService.isUserExists(email)) {
             throw new UserNotFoundException();
         }
         String tempToken = jwtService.generateToken(email);
-        String resetLink = "http://ec2-18-202-56-138.eu-west-1.compute.amazonaws.com:8080/index.html?token=" + tempToken;
+        String encodedToken = URLEncoder.encode(tempToken, "UTF-8");
+
+        String resetLink = "http://ec2-18-202-56-138.eu-west-1.compute.amazonaws.com:8080/index.html?token=" + encodedToken;
         emailService.sendEmail(email, "Forgot Password", resetLink);
         ResponseModel<String> responseModel = new ResponseModel<>();
         responseModel.setMessage("Reset link sent successfully");
