@@ -62,6 +62,7 @@ public class AuthController {
                 redisTemplate.delete(email);
                 ResponseModel<String> responseModel = new ResponseModel<>();
                 responseModel.setData(jwtToken);
+                responseModel.setMessage("Successful registration");
                 return new ResponseEntity<>(responseModel, HttpStatus.CREATED);
             } else {
                 throw new InvalidOtpCodeException();
@@ -84,33 +85,76 @@ public class AuthController {
     }
 
     @PostMapping("/forgot")
-    public ResponseEntity<ResponseModel<String>> forgotPassword(@RequestParam(value = "email") String email) throws UnsupportedEncodingException {
+    public ResponseEntity<ResponseModel<String>> forgotPassword(@RequestParam(value = "email") String email,
+                                                                @RequestParam(value = "otp", required = false) String otpCode,
+                                                                @RequestParam(value = "password", required = false) String newPassword,
+                                                                @RequestParam(value = "otpValid", required = false) String otpCodeValid) {
         if (!userService.isUserExists(email)) {
             throw new UserNotFoundException();
         }
-        String tempToken = jwtService.generateToken(email);
-        String encodedToken = URLEncoder.encode(tempToken, "UTF-8");
-
-        String resetLink = "http://ec2-18-202-56-138.eu-west-1.compute.amazonaws.com:8080/index.html?token=" + encodedToken;
-        emailService.sendEmail(email, "Forgot Password", resetLink);
-        ResponseModel<String> responseModel = new ResponseModel<>();
-        responseModel.setMessage("Reset link sent successfully");
-        return new ResponseEntity<>(responseModel, HttpStatus.OK);
-    }
-
-    @PostMapping("/forgot/web")
-    public ResponseEntity<ResponseModel<String>> forgotPasswordWeb(@RequestBody AuthRequest authRequest, @RequestParam("token") String token) {
-        String newPassword = authRequest.getPassword();
-        String userEmail = jwtService.extractUsername(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-        if (jwtService.validateToken(token, userDetails)) {
-            userService.updatePassword(userEmail, newPassword);
+        if (otpCode == null) {
+            String randomOtp = String.valueOf(new Random().nextInt(9000) + 1000);
+            redisTemplate.opsForValue().set(email, randomOtp, 1, TimeUnit.MINUTES);
             ResponseModel<String> responseModel = new ResponseModel<>();
-            responseModel.setMessage("Password updated successfully");
+            //TODO SEND Email to user(otp code) notification ms
+            emailService.sendEmail(email, "OTP code for Forgot Password", "Your OTP code is \n" + randomOtp + "\nDon't share it with others.");
+            responseModel.setMessage("OTP sent to your email. Check your inbox.");
             return new ResponseEntity<>(responseModel, HttpStatus.OK);
-        } else {
+        } else if (otpCode != null && newPassword == null) {
+            String storedOtp = redisTemplate.opsForValue().get(email);
+            if (storedOtp != null && storedOtp.equals(otpCode)) {
+
+                redisTemplate.delete(email);
+                ResponseModel<String> responseModel = new ResponseModel<>();
+                responseModel.setData("OTP_CODE_VALID");
+                responseModel.setMessage("Success");
+                return new ResponseEntity<>(responseModel, HttpStatus.OK);
+            } else {
+                throw new InvalidOtpCodeException();
+            }
+        } else if (otpCodeValid == "OTP_CODE_VALID" && newPassword != null) {
+            userService.updatePassword(email, newPassword);
+            String jwtToken = jwtService.generateToken(email);
+            emailService.sendEmail(email, "Successful Password Recovery", "We are delighted to inform you that your password has been successfully renewed. If you have any further questions or concerns, please feel free to reach out.");
+            ResponseModel<String> responseModel = new ResponseModel<>();
+            responseModel.setData(jwtToken);
+            responseModel.setMessage("Successfully Updated Password");
+            return new ResponseEntity<>(responseModel, HttpStatus.OK);
+        }else{
             throw new ForgotPasswordException();
         }
+
     }
+
+
+//    @PostMapping("/forgot")
+//    public ResponseEntity<ResponseModel<String>> forgotPassword(@RequestParam(value = "email") String email) throws UnsupportedEncodingException {
+//        if (!userService.isUserExists(email)) {
+//            throw new UserNotFoundException();
+//        }
+//        String tempToken = jwtService.generateToken(email);
+//        String encodedToken = URLEncoder.encode(tempToken, "UTF-8");
+//
+//        String resetLink = "http://ec2-18-202-56-138.eu-west-1.compute.amazonaws.com:8080/index.html?token=" + encodedToken;
+//        emailService.sendEmail(email, "Forgot Password", resetLink);
+//        ResponseModel<String> responseModel = new ResponseModel<>();
+//        responseModel.setMessage("Reset link sent successfully");
+//        return new ResponseEntity<>(responseModel, HttpStatus.OK);
+//    }
+//
+//    @PostMapping("/forgot/web")
+//    public ResponseEntity<ResponseModel<String>> forgotPasswordWeb(@RequestBody AuthRequest authRequest, @RequestParam("token") String token) {
+//        String newPassword = authRequest.getPassword();
+//        String userEmail = jwtService.extractUsername(token);
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+//        if (jwtService.validateToken(token, userDetails)) {
+//            userService.updatePassword(userEmail, newPassword);
+//            ResponseModel<String> responseModel = new ResponseModel<>();
+//            responseModel.setMessage("Password updated successfully");
+//            return new ResponseEntity<>(responseModel, HttpStatus.OK);
+//        } else {
+//            throw new ForgotPasswordException();
+//        }
+//    }
 
 }
