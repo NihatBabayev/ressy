@@ -10,6 +10,7 @@ import com.example.ressy.exception.UserNotFoundException;
 import com.example.ressy.repository.CustomerRepository;
 import com.example.ressy.repository.ProfessionalRepository;
 import com.example.ressy.repository.UserRepository;
+import com.example.ressy.service.EmailService;
 import com.example.ressy.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final CustomerRepository customerRepository;
     private final ProfessionalRepository professionalRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
 
     @Override
@@ -58,6 +60,8 @@ public class UserServiceImpl implements UserService {
             }
 //            emailService.sendEmail(userDTO.getEmail(), "Successful Registration", "Hey, " + userDTO.getFirstname() +" " +userDTO.getLastname()+" welcome to  lenny.");
    //TODO send email to succesfully registrated users
+            emailService.publishMessage("Successful registration", "Welcome to Ressy dear " + userDTO.getFirstname() + " " + userDTO.getLastname() +" . Book your appoitments with Ressy " ,  userDTO.getEmail()); //with notification MS
+
         }
     }
 
@@ -75,6 +79,6 @@ public class UserServiceImpl implements UserService {
         if(!isUserExists(userEmail)){
             throw new UserNotFoundException();
         }
-        userRepository.updatePasswordByUserEmail(userEmail, newPassword);
+        userRepository.updatePasswordByUserEmail(userEmail, passwordEncoder.encode(newPassword));
     }
 }
