@@ -1,0 +1,79 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    ports:
+      - "5432:5432"
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql // local
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=niko1234
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    command: ["postgres", "-c", "log_statement=all"]  # Add this line to enable logging
+    networks:
+      - ressy-network
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"  # RabbitMQ
+      - "15672:15672"  # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ressyAdmin
+      RABBITMQ_DEFAULT_PASS: password1
+
+    networks:
+      - ressy-network
+
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    environment:
+      REDIS_PASSWORD: password
+    ports:
+      - "6379:6379"
+    networks:
+      - ressy-network
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: ressy-app-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: niko1234
+      email_usernameEnv: forcanvaresume@gmail.com
+      email_passwordEnv: zupfrzkyykffyfcf
+      token_signing_key: +MPxoqKdOrH6YXSxdfIey4LebZxp3y5EMqLj9hgn/j6s3V7gaFiyhKGcwCIvJMBVPdYbhhtFSPIHK0qQInEI8g==
+      SPRING_CACHE_TYPE: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_HOST: redis-container
+      SPRING_REDIS_PASSWORD: password
+      notification_microservice_url : http://ec2-18-202-56-138.eu-west-1.compute.amazonaws.com:3000
+      SPRING_RABBITMQ_HOST : rabbitmq-container
+      SPRING_RABBITMQ_PORT : 5672
+      SPRING_RABBITMQ_USERNAME : ressyAdmin
+      SPRING_RABBITMQ_PASSWORD : password1
+      AWS_ACCESS_KEY_ID : AKIAVDT4B7ZLIZ33EO6U
+      AWS_SECRET_KEY : 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
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ressy-network
+networks:
+  ressy-network:
+    driver: bridge
