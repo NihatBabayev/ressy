@@ -3,8 +3,10 @@ package com.example.ressy.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name = "users",schema = "ressy")
+@Table(name = "users", schema = "ressy")
 @Data
 public class User {
 
@@ -20,6 +22,8 @@ public class User {
     private String email;
     private String password;
     private String role;
+    private LocalDate created;
+    private String photoName;
 
     @Column(name = "is_active")
     private boolean isActive;

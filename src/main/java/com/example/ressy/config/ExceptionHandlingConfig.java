@@ -17,7 +17,8 @@ public class ExceptionHandlingConfig {
                     UserAlreadyExistsException.class,
                     UsernameNotFoundException.class,
                     InvalidOtpCodeException.class,
-                    ForgotPasswordException.class
+                    ForgotPasswordException.class,
+                    IllegalFileTypeException.class
             })
     public ResponseEntity<ResponseModel<String>> handleCustomExceptions(Exception ex) throws Exception {
         ResponseModel<String> exceptionResponseModel = new ResponseModel<>();
@@ -26,7 +27,7 @@ public class ExceptionHandlingConfig {
 
 
 
-        if (ex instanceof UserAlreadyExistsException  || ex instanceof UsernameNotFoundException || ex instanceof InvalidOtpCodeException || ex instanceof ForgotPasswordException) {
+        if (ex instanceof UserAlreadyExistsException  || ex instanceof UsernameNotFoundException || ex instanceof InvalidOtpCodeException || ex instanceof ForgotPasswordException || ex instanceof IllegalFileTypeException) {
             httpStatus = HttpStatus.BAD_REQUEST;
 
         }

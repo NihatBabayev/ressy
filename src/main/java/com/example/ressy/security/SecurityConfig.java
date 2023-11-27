@@ -66,7 +66,8 @@ public class SecurityConfig {
                                 //                                .requestMatchers("/teacher/**").hasRole("USER")
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/author/**").hasRole("AUTHOR")
-                                .requestMatchers("/student/**").hasRole("STUDENT")
+                            .requestMatchers("/user/**").permitAll()
+
                 ).cors(cors -> cors.disable())
                 .httpBasic(withDefaults())
                 .sessionManagement((session) -> session

@@ -1,5 +1,6 @@
 package com.example.ressy.service.Impl;
 
+import com.example.ressy.exception.IllegalFileTypeException;
 import com.example.ressy.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class S3ServiceImpl implements S3Service {
     public void uploadPhoto(String photoName, MultipartFile file) throws IOException {
         String contentType = file.getContentType();
         if (!contentType.equals("image/png") && !contentType.equals("image/jpeg")) {
-            throw new IllegalArgumentException("Only jpeg and png");
+            throw new IllegalFileTypeException();
         }
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
