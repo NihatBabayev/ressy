@@ -1,6 +1,7 @@
 
 package com.example.ressy.service.Impl;
 
+import com.example.ressy.dto.PhotoDTO;
 import com.example.ressy.dto.ResponseModel;
 import com.example.ressy.dto.UserDTO;
 import com.example.ressy.dto.UserProfileDTO;
@@ -128,4 +129,24 @@ public class UserServiceImpl implements UserService {
         String photoName = userRepository.findByEmail(userEmail).getPhotoName();
         return s3Service.getObjectFromS3AsBase64(photoName);
     }
+
+    @Override
+    public ResponseModel<String> uploadProfilePhotoWithBase64(String userEmail, PhotoDTO photoDTO) {
+        User user = userRepository.findByEmail(userEmail);
+        user.setPhotoBase64(photoDTO.getPhoto());
+        userRepository.save(user);
+        ResponseModel<String> responseModel = new ResponseModel<>();
+        responseModel.setMessage("profile photo added successfully.");
+        return responseModel;
+    }
+
+    @Override
+    public ResponseModel<String> getUserProfilePhotoBase64(String userEmail) {
+        String photoBase64Encoded = userRepository.findByEmail(userEmail).getPhotoBase64();
+        ResponseModel<String> responseModel = new ResponseModel<>();
+        responseModel.setData(photoBase64Encoded);
+        responseModel.setMessage("Base 64 encoded photo is returned successfully.");
+        return responseModel;
+    }
+
 }

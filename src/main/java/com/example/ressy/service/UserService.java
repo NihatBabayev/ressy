@@ -1,5 +1,6 @@
 package com.example.ressy.service;
 
+import com.example.ressy.dto.PhotoDTO;
 import com.example.ressy.dto.ResponseModel;
 import com.example.ressy.dto.UserDTO;
 import com.example.ressy.dto.UserProfileDTO;
@@ -22,4 +23,8 @@ public interface UserService {
     ResponseModel<String> uploadProfilePhoto(String userEmail, MultipartFile file) throws IOException;
 
     String getUserProfilePhoto(String userEmail);
+
+    ResponseModel<String> uploadProfilePhotoWithBase64(String userEmail, PhotoDTO photoDTO);
+
+    ResponseModel<String> getUserProfilePhotoBase64(String userEmail);
 }

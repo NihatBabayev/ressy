@@ -25,6 +25,9 @@ public class User {
     private LocalDate created;
     private String photoName;
 
+    @Column(columnDefinition = "TEXT")
+    private String photoBase64;
+
     @Column(name = "is_active")
     private boolean isActive;
 

@@ -1,5 +1,6 @@
 package com.example.ressy.controller;
 
+import com.example.ressy.dto.PhotoDTO;
 import com.example.ressy.dto.ResponseModel;
 import com.example.ressy.dto.UserProfileDTO;
 import com.example.ressy.security.JwtService;
@@ -25,22 +26,22 @@ public class UserController {
     @GetMapping
     public ResponseEntity<ResponseModel<UserProfileDTO>> getUserDetails(HttpServletRequest request) throws JsonProcessingException {
         String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
-        return new ResponseEntity<>(userService.getUserDetailsForProfile( userEmail), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserDetailsForProfile(userEmail), HttpStatus.OK);
     }
+
     @PostMapping("/photo")
-    public ResponseEntity<ResponseModel<String>> uploadProfilePhoto(@RequestParam("file") MultipartFile file,
-                                                     HttpServletRequest request) throws IOException {
+    public ResponseEntity<ResponseModel<String>> uploadProfilePhoto(@RequestBody PhotoDTO photoDTO,
+                                                                    HttpServletRequest request) throws IOException {
         String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
 
-        return new ResponseEntity<>(userService.uploadProfilePhoto(userEmail, file), HttpStatus.OK);
+        return new ResponseEntity<>(userService.uploadProfilePhotoWithBase64(userEmail, photoDTO ), HttpStatus.OK);
     }
+
     @GetMapping("/photo")
-    public ResponseEntity<ResponseModel<String>> getProfilePhoto(HttpServletRequest request){
+    public ResponseEntity<ResponseModel<String>> getProfilePhoto(HttpServletRequest request) {
         String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
-        String photoBase64Encoded = userService.getUserProfilePhoto(userEmail);
-        ResponseModel<String> responseModel = new ResponseModel<>();
-        responseModel.setData(photoBase64Encoded);
-        responseModel.setMessage("Base 64 encoded photo is returned successfully.");
-        return new ResponseEntity<>(responseModel, HttpStatus.OK);
+//        String photoBase64Encoded = userService.getUserProfilePhoto(userEmail);
+
+        return new ResponseEntity<>(userService.getUserProfilePhotoBase64(userEmail), HttpStatus.OK);
     }
 }
