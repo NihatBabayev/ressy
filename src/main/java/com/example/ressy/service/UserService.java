@@ -24,7 +24,10 @@ public interface UserService {
 
     String getUserProfilePhoto(String userEmail);
 
+    byte[] getUserProfilePhotoAsBytes(String userEmail);
+
     ResponseModel<String> uploadProfilePhotoWithBase64(String userEmail, PhotoDTO photoDTO);
 
     ResponseModel<String> getUserProfilePhotoBase64(String userEmail);
+
 }

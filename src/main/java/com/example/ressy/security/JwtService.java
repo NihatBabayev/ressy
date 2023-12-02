@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +31,7 @@ public class JwtService {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             return extractClaim(token, Claims::getSubject);
-        }else
+        } else
             throw new RuntimeException("Not succeded");
     }
 
@@ -61,22 +63,33 @@ public class JwtService {
     }
 
 
-    public String generateToken(String userName){
-        Map<String,Object> claims=new HashMap<>();
-        return createToken(claims,userName);
+    public String generateToken(String userName) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, userName);
     }
 
+    //    private String createToken(Map<String, Object> claims, String userName) {
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(userName)
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*24*30)) //1 month
+//                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+//    }
     private String createToken(Map<String, Object> claims, String userName) {
+        Instant now = Instant.now();
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plus(30, ChronoUnit.DAYS))) // 1 month
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key getSignKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

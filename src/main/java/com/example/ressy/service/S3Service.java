@@ -10,4 +10,5 @@ public interface S3Service {
     void uploadPhoto(String photoName, MultipartFile file) throws IOException;
 
     String getObjectFromS3AsBase64(String fullPath);
+     byte[] getObjectFromS3AsBytes(String fullPath);
 }

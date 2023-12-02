@@ -30,18 +30,33 @@ public class UserController {
     }
 
     @PostMapping("/photo")
-    public ResponseEntity<ResponseModel<String>> uploadProfilePhoto(@RequestBody PhotoDTO photoDTO,
+    public ResponseEntity<ResponseModel<String>> uploadProfilePhoto(@RequestPart MultipartFile photoFile,
                                                                     HttpServletRequest request) throws IOException {
         String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
 
-        return new ResponseEntity<>(userService.uploadProfilePhotoWithBase64(userEmail, photoDTO ), HttpStatus.OK);
+        return new ResponseEntity<>(userService.uploadProfilePhoto(userEmail, photoFile ), HttpStatus.OK);
     }
 
     @GetMapping("/photo")
-    public ResponseEntity<ResponseModel<String>> getProfilePhoto(HttpServletRequest request) {
+    public ResponseEntity<byte[]> getProfilePhoto(HttpServletRequest request) {
         String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
 //        String photoBase64Encoded = userService.getUserProfilePhoto(userEmail);
 
-        return new ResponseEntity<>(userService.getUserProfilePhotoBase64(userEmail), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserProfilePhotoAsBytes(userEmail), HttpStatus.OK);
     }
+//    @PostMapping("/photo")
+//    public ResponseEntity<ResponseModel<String>> uploadProfilePhoto(@RequestBody PhotoDTO photoDTO,
+//                                                                    HttpServletRequest request) throws IOException {
+//        String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
+//
+//        return new ResponseEntity<>(userService.uploadProfilePhotoWithBase64(userEmail, photoDTO ), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/photo")
+//    public ResponseEntity<ResponseModel<String>> getProfilePhoto(HttpServletRequest request) {
+//        String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
+////        String photoBase64Encoded = userService.getUserProfilePhoto(userEmail);
+//
+//        return new ResponseEntity<>(userService.getUserProfilePhotoBase64(userEmail), HttpStatus.OK);
+//    }
 }

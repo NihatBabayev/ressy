@@ -56,4 +56,19 @@ public class S3ServiceImpl implements S3Service {
             throw new RuntimeException("Error fetching object from S3", e);
         }
     }
+    public byte[] getObjectFromS3AsBytes(String fullPath) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fullPath)
+                    .build();
+
+            ResponseInputStream<GetObjectResponse> objectBytes = amazonS3.getObject(getObjectRequest);
+
+            return objectBytes.readAllBytes();
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching object from S3", e);
+        }
+    }
+
 }

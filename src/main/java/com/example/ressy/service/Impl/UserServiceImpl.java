@@ -129,6 +129,11 @@ public class UserServiceImpl implements UserService {
         String photoName = userRepository.findByEmail(userEmail).getPhotoName();
         return s3Service.getObjectFromS3AsBase64(photoName);
     }
+    @Override
+    public byte[] getUserProfilePhotoAsBytes(String userEmail) {
+        String photoName = userRepository.findByEmail(userEmail).getPhotoName();
+        return s3Service.getObjectFromS3AsBytes(photoName);
+    }
 
     @Override
     public ResponseModel<String> uploadProfilePhotoWithBase64(String userEmail, PhotoDTO photoDTO) {
