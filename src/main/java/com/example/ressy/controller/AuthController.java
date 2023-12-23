@@ -1,6 +1,7 @@
 package com.example.ressy.controller;
 
 import com.example.ressy.dto.AuthRequest;
+import com.example.ressy.dto.DetailsDTO;
 import com.example.ressy.dto.ResponseModel;
 import com.example.ressy.dto.UserDTO;
 import com.example.ressy.exception.ForgotPasswordException;
@@ -11,6 +12,7 @@ import com.example.ressy.security.CustomUserDetailsService;
 import com.example.ressy.security.JwtService;
 import com.example.ressy.service.EmailService;
 import com.example.ressy.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ public class AuthController {
     private final RedisTemplate<String, String> redisTemplate;
     private final EmailService emailService;
     private final CustomUserDetailsService userDetailsService;
+
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseModel<String>> signupUser(@RequestBody UserDTO userDTO,
@@ -61,7 +64,12 @@ public class AuthController {
                 redisTemplate.delete(email);
                 ResponseModel<String> responseModel = new ResponseModel<>();
                 responseModel.setData(jwtToken);
-                responseModel.setMessage("Successful registration");
+                if("doctor".equals(type)){
+                    responseModel.setMessage("doctor");
+                } else if ("customer".equals(type)) {
+                    responseModel.setMessage("customer");
+                }
+
                 return new ResponseEntity<>(responseModel, HttpStatus.CREATED);
             } else {
                 throw new InvalidOtpCodeException();
@@ -74,14 +82,18 @@ public class AuthController {
     public ResponseEntity<ResponseModel<String>> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            ResponseModel<String> responseModel = new ResponseModel<>();
-            String jwtToken = jwtService.generateToken(authRequest.getUsername());
-            responseModel.setData(jwtToken);
-            responseModel.setMessage("Successfully logged in");
-            return new ResponseEntity<>(responseModel, HttpStatus.OK);
+            return new ResponseEntity<>(userService.login(authRequest), HttpStatus.OK);
         } else {
             throw new UserNotFoundException();
         }
+    }
+
+    @PostMapping("/details")
+    public  ResponseEntity<ResponseModel<String>> addUserDetails(@RequestBody DetailsDTO detailsDTO,
+                                                                 HttpServletRequest request){
+        String userEmail = jwtService.extractUsernameFromHeader(request.getHeader("Authorization"));
+        return new ResponseEntity<>(userService.addUserDetails(userEmail, detailsDTO), HttpStatus.OK);
+
     }
 
     @PostMapping("/forgot")

@@ -65,7 +65,6 @@ public class SecurityConfig {
                         auth
                                 //                                .requestMatchers("/teacher/**").hasRole("USER")
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/author/**").hasRole("AUTHOR")
                             .requestMatchers("/user/**").permitAll()
 
                 ).cors(cors -> cors.disable())

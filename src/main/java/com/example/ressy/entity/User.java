@@ -23,13 +23,13 @@ public class User {
     private String password;
     private String role;
     private LocalDate created;
+    private LocalDate dob;
     private String photoName;
+    private String gender;
 
     @Column(columnDefinition = "TEXT")
     private String photoBase64;
 
     @Column(name = "is_active")
     private boolean isActive;
-
-
 }

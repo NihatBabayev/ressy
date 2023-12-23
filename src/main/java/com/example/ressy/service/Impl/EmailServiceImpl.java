@@ -1,5 +1,6 @@
 package com.example.ressy.service.Impl;
 
+import com.example.ressy.dto.EmailRequest;
 import com.example.ressy.service.EmailService;
 
 import org.springframework.amqp.core.MessageProperties;
@@ -28,7 +29,11 @@ public class EmailServiceImpl implements EmailService {
 //        notification.put("title", title);
 //        notification.put("text", text);
 //        notification.put("recipient", recipient);
-        String messageJson = "{\"title\":\"" + title + "\",\"text\":\"" + text + "\",\"recipient\":\"" + recipient + "\"}";
+//        String messageJson = "{\"title\":\"" + title + "\",\"text\":\"" + text + "\",\"recipient\":\"" + recipient + "\"}";
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setTitle(title);
+        emailRequest.setText(text);
+        emailRequest.setRecipient(recipient);
 
 
 //        rabbitTemplate.convertAndSend("notification_queue", notification);
@@ -37,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
 //             properties.setContentEncoding("UTF-8");
 //             return message;
 //         });
-        rabbitTemplate.convertAndSend("notification_queue", messageJson, message -> {
+        rabbitTemplate.convertAndSend("notification_queue", emailRequest, message -> {
             MessageProperties properties = message.getMessageProperties();
             properties.setContentEncoding("UTF-8");
             return message;

@@ -1,14 +1,12 @@
 package com.example.ressy.service;
 
-import com.example.ressy.dto.PhotoDTO;
-import com.example.ressy.dto.ResponseModel;
-import com.example.ressy.dto.UserDTO;
-import com.example.ressy.dto.UserProfileDTO;
+import com.example.ressy.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @Service
 public interface UserService {
@@ -30,4 +28,11 @@ public interface UserService {
 
     ResponseModel<String> getUserProfilePhotoBase64(String userEmail);
 
+    ResponseModel<byte[]> getUserProfilePhotoAsBytesFromBase64(String userEmail) throws UnsupportedEncodingException;
+
+    ResponseModel<String> addUserDetails(String userEmail, DetailsDTO detailsDTO);
+
+    ResponseModel<String> login(AuthRequest authRequest);
+
+    ResponseModel<String> editUserDetails(String userEmail, UserProfileDTO userProfileDTO);
 }

@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "professionals", schema = "ressy")
+@Table(name = "doctors", schema = "ressy")
 @Data
-public class Professional {
+public class Doctor {
     @Id
     @GeneratedValue
     private Long id;
@@ -15,5 +15,4 @@ public class Professional {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }
